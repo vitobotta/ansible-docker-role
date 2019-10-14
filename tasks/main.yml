@@ -1,0 +1,38 @@
+---
+- name: Checking if docker has already been installed
+  stat:
+    path: /etc/_docker_installed
+  register: "_docker_installed"
+
+- name: Download installer
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+  when:
+    - not _docker_installed.stat.exists
+
+- name: Install docker
+  shell: "sh /tmp/get-docker.sh"
+  when:
+    - not _docker_installed.stat.exists
+
+- name: Marking as bootstrapped
+  file:
+    path: /etc/_docker_installed
+    state: "touch"
+
+- name: Ensure Docker is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Install docker compose
+  pip:
+    name: docker-compose
+    state: latest
+
+- name: Create /etc/docker-compose
+  file:
+    name: /etc/docker-compose
+    state: directory
