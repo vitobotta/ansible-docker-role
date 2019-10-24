@@ -1,4 +1,9 @@
 ---
+- name: Allow live reload
+  template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
 - name: Checking if docker has already been installed
   stat:
     path: /etc/_docker_installed
