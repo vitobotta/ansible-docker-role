@@ -1,8 +1,4 @@
 ---
-- name: Allow live reload
-  template:
-    src: daemon.json
-    dest: /etc/docker/daemon.json
 
 - name: Checking if docker has already been installed
   stat:
@@ -20,6 +16,19 @@
   shell: "sh /tmp/get-docker.sh"
   when:
     - not _docker_installed.stat.exists
+
+- name: Create docker config directory
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0600
+    owner: root
+    group: root
+
+- name: Allow live reload
+  template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
 
 - name: Marking as bootstrapped
   file:
